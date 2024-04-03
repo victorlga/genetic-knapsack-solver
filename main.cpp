@@ -66,6 +66,30 @@ vector<vector<int>> createInitialPopulation(int populationSize)
     return initialPopulation;
 }
 
+vector<int> calculateFitness(int weight, int value, vector<vector<int>> population, int capacity)
+{
+    int populationSize = population.size();
+    int numberSolutionsPerPopulation = population[0].size();
+
+    vector<int> fitness(populationSize);
+
+    for (int i = 0; i < populationSize; ++i)
+    {   
+        int sumOfSelectedValues = 0;
+        int sumOfSelectedWeights = 0;
+        for (int j = 0; j < numberSolutionsPerPopulation; ++j)
+        {   
+            int solutionItemMask = population[i][j];
+            sumOfSelectedValues += solutionItemMask * value;
+            sumOfSelectedWeights += solutionItemMask * weight;
+        }
+        fitness[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
+    }
+
+    return fitness;
+}
+
+
 
 int main()
 {
