@@ -57,7 +57,8 @@ class GeneticKnapsack
     std::vector<std::vector<int>> parents,
                                   population,
                                   offsprings,
-                                  mutants;
+                                  mutants,
+                                  fitnessMeasuresHistory;
 
     void calculateFitness()
     {
@@ -181,7 +182,6 @@ class GeneticKnapsack
 
     void optimizePopulation(int numberOfGenerations)
     {
-        std::vector<std::vector<int>> fitnessMeasuresHistory;
         int halfPopulationSize = populationSize / 2;
 
         for (int i = 0; i<numberOfGenerations; ++i)
@@ -195,11 +195,18 @@ class GeneticKnapsack
 
             updatePopulation();
         }
+    }
 
-        for ()
-        {
+    void showResults()
+    {
+        std::cout << "Last generation fitness measure: ";
+        for (int& fitnessMeasure : fitnessMeasures) std::cout << fitnessMeasure << ", ";
+        std::cout << std::endl;
 
-        }
+        int indexOfMaxFitness = distance(fitnessMeasures.begin(), max_element(fitnessMeasures.begin(), fitnessMeasures.end()));
+        std::cout << "Last generation parameters: ";
+        for (int& parameter : population[indexOfMaxFitness]) std::cout << parameter << ", ";
+        std::cout << std::endl;
     }
 };
 
@@ -222,6 +229,8 @@ int main()
 
     const int numberOfGenerations = 1000;
     geneticKnapsack.optimizePopulation(numberOfGenerations);
+
+    geneticKnapsack.showResults();
 
     return 0;
 }
