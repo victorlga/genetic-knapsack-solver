@@ -50,25 +50,20 @@ vector<Item> createRandomItems()
 class GeneticKnapsack
 {
     private:
-    int populationSize;
-    int numberOfSolutionsPerPopulation;
     int capacity;
+    int fitnessMaxValueIndex;
+    int numberOfSolutionsPerPopulation;
+    int populationSize;
     vector<int> fitness;
-    vector<int> fitnessMaxValueIndices;
     vector<vector<int>> parents;
     vector<vector<int>> population;
 
-    void findFitnessMaxValueIndices()
+    void findFitnessMaxValueIndex()
     {
         int maxValueFitness = *max_element(fitness.begin(), fitness.end());
-
-        for (int i = 0; i < fitness.size(); ++i)
-        {
-            if (fitness[i] == maxValueFitness)
-            {
-                fitnessMaxValueIndices.push_back(i);
-            }
-        }
+        int i = 0;
+        while (fitness[i] != maxValueFitness) i++;
+        fitnessMaxValueIndex = i;
     }
 
     public:
@@ -111,9 +106,12 @@ class GeneticKnapsack
 
     void selectSolutionFromPopulation(int numberOfParents)
     {
+        vector<int> parent;
         for (int i = 0; i < numberOfParents; ++i)
         {
-
+            findFitnessMaxValueIndices();
+            parent = population[];
+            parents.push_back(parent);
         }
     }
 };
