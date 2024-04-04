@@ -5,8 +5,6 @@
 #include <vector>
 #include <utility>
 
-using namespace std;
-
 const int MAX_NUMBER_OF_ITEMS = 50;
 const int MAX_ITEM_VALUE = 100;
 const int MAX_ITEM_WEIGHT = 15;
@@ -23,21 +21,21 @@ struct Item
 
 vector<Item> createRandomItems()
 {
-    random_device rd;
-    mt19937 gen(rd());
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
-    uniform_int_distribution<> numberOfItemsDistr(1, MAX_NUMBER_OF_ITEMS);
+    std::uniform_int_distribution<> numberOfItemsDistr(1, MAX_NUMBER_OF_ITEMS);
     const int numberOfItems = numberOfItemsDistr(gen);
 
     int value;
     int weight;
 
-    vector<Item> items = {};
+    std::vector<Item> items = {};
 
     for (int id = 0; id < numberOfItems; ++id)
     {
-        uniform_int_distribution<> valueDistr(1, MAX_ITEM_VALUE);
-        uniform_int_distribution<> weightDistr(1, MAX_ITEM_WEIGHT);
+        std::uniform_int_distribution<> valueDistr(1, MAX_ITEM_VALUE);
+        std::uniform_int_distribution<> weightDistr(1, MAX_ITEM_WEIGHT);
 
         value = valueDistr(gen);
         weight = weightDistr(gen);
@@ -54,9 +52,9 @@ class GeneticKnapsack
     int capacity;
     int numberOfSolutionsPerPopulation;
     int populationSize;
-    vector<int> fitness;
-    vector<vector<int>> parents;
-    vector<vector<int>> population;
+    std::vector<int> fitness;
+    std::vector<vector<int>> parents;
+    std::vector<vector<int>> population;
 
     public:
     GeneticKnapsack(
@@ -67,11 +65,11 @@ class GeneticKnapsack
 
     void createInitialPopulation()
     {
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_int_distribution<> solutionDistr(0, 1);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> solutionDistr(0, 1);
 
-        vector<int> individual;
+        std::vector<int> individual;
         for (int i = 0; i < populationSize; ++i) {
             for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
                 individual.push_back(solutionDistr(gen));
@@ -103,7 +101,7 @@ class GeneticKnapsack
         {
             int indexOfMaxFitness = distance(fitness.begin(), max_element(fitness.begin(), fitness.end()));
             parents.push_back(population[indexOfMaxFitness]);
-            fitness[indexOfMaxFitness] = numeric_limits<int>::min();
+            fitness[indexOfMaxFitness] = std::numeric_limits<int>::min();
         }
     }
 };
@@ -111,11 +109,11 @@ class GeneticKnapsack
 
 int main()
 {
-    vector<Item> items = createRandomItems();
+    std::vector<Item> items = createRandomItems();
 
     for (Item& item : items)
     {
-        cout << "ID: " << item.id << " VALUE: " << item.value << " WEIGHT: " << item.weight << endl;
+        std::cout << "ID: " << item.id << " VALUE: " << item.value << " WEIGHT: " << item.weight << std::endl;
     }
 
     const int knapsackCapacity = 100;
