@@ -19,7 +19,7 @@ struct Item
 };
 
 
-vector<Item> createRandomItems()
+std::vector<Item> createRandomItems()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -52,9 +52,10 @@ class GeneticKnapsack
     int capacity;
     int numberOfSolutionsPerPopulation;
     int populationSize;
-    std::vector<int> fitness;
-    std::vector<vector<int>> parents;
-    std::vector<vector<int>> population;
+    std::vector<int> fitnessMeasures;
+    std::vector<std::vector<int>> parents;
+    std::vector<std::vector<int>> population;
+    std::vector<std::vector<int>> offsprings;
 
     public:
     GeneticKnapsack(
@@ -68,6 +69,8 @@ class GeneticKnapsack
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> solutionDistr(0, 1);
+
+        population.clear();
 
         std::vector<int> individual;
         for (int i = 0; i < populationSize; ++i) {
@@ -91,17 +94,60 @@ class GeneticKnapsack
                 sumOfSelectedValues += solutionItemMask * value;
                 sumOfSelectedWeights += solutionItemMask * weight;
             }
-            fitness[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
+            fitnessMeasures[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
         }
     }
 
     void selectSolutionFromPopulation(int numberOfParents)
     {
+        parents.clear();
         for (int i = 0; i < numberOfParents; ++i)
         {
-            int indexOfMaxFitness = distance(fitness.begin(), max_element(fitness.begin(), fitness.end()));
+            int indexOfMaxFitness = distance(fitnessMeasures.begin(), max_element(fitnessMeasures.begin(), fitnessMeasures.end()));
             parents.push_back(population[indexOfMaxFitness]);
-            fitness[indexOfMaxFitness] = std::numeric_limits<int>::min();
+            fitnessMeasures[indexOfMaxFitness] = std::numeric_limits<int>::min();
+        }
+    }
+
+    std::vector<int> createOffspring(int parent1Index, int parent2Index)
+    {
+        std::vector<int> offspring;
+        for (int i = 0; i < numberOfSolutionsPerPopulation/2; ++i)
+        {   
+            int parentOffspringValue = (i < numberOfSolutionsPerPopulation/2) ? parents[parent1Index][i] : parents[parent2Index][i];
+            offspring.push_back(parentOffspringValue);
+        }
+
+        return offspring;
+    }
+
+    void crossOverParents(int numberOfOffsprings)
+    {
+        offsprings.clear();
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> crossOverDistr(0.0, 1.0);
+        int chanceOfCrossingOver;
+        int crossingOverProbabilityThreshold = 0.8;
+
+        int parentIndexReference = 0;
+        int parent1Index;
+        int parent2Index;
+
+        int offspringsCount = 0;
+        while (offspringsCount < numberOfOffsprings)
+        {
+            parent1Index = parentIndexReference % parents.size();
+            parent2Index = (parentIndexReference + 1) % parents.size();
+
+            chanceOfCrossingOver = crossOverDistr(gen);
+            if (chanceOfCrossingOver > crossingOverProbabilityThreshold)
+            {
+                offsprings[offspringsCount] = createOffspring(parent1Index, parent2Index);
+                offspringsCount++;
+            }
+            parentIndexReference++;
         }
     }
 };
