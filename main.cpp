@@ -53,14 +53,17 @@ class GeneticKnapsack
     int numberOfSolutionsPerPopulation;
     int populationSize;
     std::vector<int> fitnessMeasures;
-    std::vector<std::vector<int>> parents;
-    std::vector<std::vector<int>> population;
-    std::vector<std::vector<int>> offsprings;
+    std::vector<Item> items;
+    std::vector<std::vector<int>> parents,
+                                  population,
+                                  offsprings,
+                                  mutants;
 
     public:
     GeneticKnapsack(
-        int capacity
-    ) : capacity(capacity) {}
+        int capacity,
+        std::vector<Item> items
+    ) : capacity(capacity), items(items) {}
 
     void createInitialPopulation(int newPopulationSize, int newNumberOfSolutionsPerPopulation)
     {
@@ -129,8 +132,7 @@ class GeneticKnapsack
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_real_distribution<> crossOverDistr(0.0, 1.0);
-        int chanceOfCrossingOver;
-        int crossingOverProbabilityThreshold = 0.8;
+        double crossingOverRate = 0.2;
 
         int parentIndexReference = 0;
         int parent1Index;
@@ -142,14 +144,35 @@ class GeneticKnapsack
             parent1Index = parentIndexReference % parents.size();
             parent2Index = (parentIndexReference + 1) % parents.size();
 
-            chanceOfCrossingOver = crossOverDistr(gen);
-            if (chanceOfCrossingOver > crossingOverProbabilityThreshold)
+            if (crossOverDistr(gen) > crossingOverRate)
             {
                 offsprings[offspringsCount] = createOffspring(parent1Index, parent2Index);
                 offspringsCount++;
             }
             parentIndexReference++;
         }
+    }
+
+    void mutateOffsprings()
+    {
+        double mutationRate = 0.15;
+        mutants = offsprings;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> mutationDistr(0.0, 1.0);
+        std::uniform_int_distribution<> mutantsDistr(0, numberOfSolutionsPerPopulation-1);
+        int mutantSolutionIndex;
+        for (int i = 0; i < offsprings.size(); ++i)
+        {
+            if (mutationDistr(gen) <= mutationRate) continue;
+            mutantSolutionIndex = mutantsDistr(gen);
+            mutants[i][mutantSolutionIndex] = (mutants[i][mutantSolutionIndex] == 0) ? 1 : 0;
+        }
+    }
+
+    void optimize()
+    {
+
     }
 };
 
@@ -164,7 +187,7 @@ int main()
     }
 
     const int knapsackCapacity = 100;
-    GeneticKnapsack geneticKnapsack(knapsackCapacity);
+    GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
 
     const int populationSize = items.size();
     const int numberOfSolutionsPerPopulation = 16;
