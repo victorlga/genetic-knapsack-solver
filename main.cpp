@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -46,49 +47,76 @@ vector<Item> createRandomItems()
     return items;
 }
 
-vector<vector<int>> createInitialPopulation(int populationSize)
+class GeneticKnapsack
 {
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> solutionDistr(0, 1);
+    private:
+    int populationSize;
+    int numberOfSolutionsPerPopulation;
+    int capacity;
+    vector<int> fitness;
+    vector<int> fitnessMaxValueIndices;
+    vector<vector<int>> parents;
+    vector<vector<int>> population;
 
-    int numberSolutionsPerPopulation = 16;
-    vector<vector<int>> initialPopulation(populationSize, vector<int>(numberSolutionsPerPopulation));
-
-    for (int i = 0; i < populationSize; ++i)
+    void findFitnessMaxValueIndices()
     {
-        for (int j = 0; j < numberSolutionsPerPopulation; ++j)
+        int maxValueFitness = *max_element(fitness.begin(), fitness.end());
+
+        for (int i = 0; i < fitness.size(); ++i)
         {
-            initialPopulation[i][j] = solutionDistr(gen);
+            if (fitness[i] == maxValueFitness)
+            {
+                fitnessMaxValueIndices.push_back(i);
+            }
         }
     }
 
-    return initialPopulation;
-}
+    public:
+    GeneticKnapsack(
+        int populationSize,
+        int numberOfSolutionsPerPopulation,
+        int capacity
+    ) : populationSize(populationSize), numberOfSolutionsPerPopulation(numberOfSolutionsPerPopulation), capacity(capacity) {}
 
-vector<int> calculateFitness(int weight, int value, vector<vector<int>> population, int capacity)
-{
-    int populationSize = population.size();
-    int numberSolutionsPerPopulation = population[0].size();
+    void createInitialPopulation()
+    {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> solutionDistr(0, 1);
 
-    vector<int> fitness(populationSize);
-
-    for (int i = 0; i < populationSize; ++i)
-    {   
-        int sumOfSelectedValues = 0;
-        int sumOfSelectedWeights = 0;
-        for (int j = 0; j < numberSolutionsPerPopulation; ++j)
-        {   
-            int solutionItemMask = population[i][j];
-            sumOfSelectedValues += solutionItemMask * value;
-            sumOfSelectedWeights += solutionItemMask * weight;
+        for (int i = 0; i < populationSize; ++i) {
+            vector<int> individual;
+            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
+                individual.push_back(solutionDistr(gen));
+            }
+            population.push_back(individual);
         }
-        fitness[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
     }
 
-    return fitness;
-}
+    void calculateFitness(int weight, int value)
+    {
+        for (int i = 0; i < populationSize; ++i)
+        {
+            int sumOfSelectedValues = 0;
+            int sumOfSelectedWeights = 0;
+            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j)
+            {
+                int solutionItemMask = population[i][j];
+                sumOfSelectedValues += solutionItemMask * value;
+                sumOfSelectedWeights += solutionItemMask * weight;
+            }
+            fitness[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
+        }
+    }
 
+    void selectSolutionFromPopulation(int numberOfParents)
+    {
+        for (int i = 0; i < numberOfParents; ++i)
+        {
+
+        }
+    }
+};
 
 
 int main()
