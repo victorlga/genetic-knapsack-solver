@@ -149,9 +149,11 @@ class GeneticKnapsack
 
     void updatePopulation()
     {
-        merge(parents.begin(), parents.end(),
-              mutants.begin(), mutants.end(),
-              population.begin());
+        merge(
+            parents.begin(), parents.end(),
+            mutants.begin(), mutants.end(),
+            population.begin()
+        );
     }
 
     public:
