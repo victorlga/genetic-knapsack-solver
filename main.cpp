@@ -59,13 +59,14 @@ class GeneticKnapsack
 
     public:
     GeneticKnapsack(
-        int populationSize,
-        int numberOfSolutionsPerPopulation,
         int capacity
-    ) : populationSize(populationSize), numberOfSolutionsPerPopulation(numberOfSolutionsPerPopulation), capacity(capacity) {}
+    ) : capacity(capacity) {}
 
-    void createInitialPopulation()
+    void createInitialPopulation(int newPopulationSize, int newNumberOfSolutionsPerPopulation)
     {
+        populationSize = newPopulationSize;
+        numberOfSolutionsPerPopulation = newNumberOfSolutionsPerPopulation;
+
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> solutionDistr(0, 1);
@@ -163,12 +164,13 @@ int main()
     }
 
     const int knapsackCapacity = 100;
+    GeneticKnapsack geneticKnapsack(knapsackCapacity);
 
-    int populationSize = items.size();
+    const int populationSize = items.size();
+    const int numberOfSolutionsPerPopulation = 16;
+    geneticKnapsack.createInitialPopulation(populationSize, numberOfSolutionsPerPopulation);
 
-    auto initialPopulation = createInitialPopulation(populationSize);
-
-    int numberOfGenerations = 1000;
+    const int numberOfGenerations = 1000;
 
     
 
