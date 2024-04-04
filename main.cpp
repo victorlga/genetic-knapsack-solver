@@ -62,6 +62,7 @@ class GeneticKnapsack
 
     void calculateFitness()
     {
+        fitnessMeasures.clear();
         for (int i = 0; i < populationSize; ++i)
         {
             int value = items[i].value;
@@ -74,7 +75,7 @@ class GeneticKnapsack
                 sumOfSelectedValues += solutionItemMask * value;
                 sumOfSelectedWeights += solutionItemMask * weight;
             }
-            fitnessMeasures[i] = (sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0;
+            fitnessMeasures.push_back((sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0);
         }
     }
 
@@ -122,7 +123,7 @@ class GeneticKnapsack
 
             if (crossOverDistr(gen) > crossingOverRate)
             {
-                offsprings[offspringsCount] = createOffspring(parent1Index, parent2Index);
+                offsprings.push_back(createOffspring(parent1Index, parent2Index));
                 offspringsCount++;
             }
             parentIndexReference++;
@@ -205,8 +206,7 @@ class GeneticKnapsack
 
         int indexOfMaxFitness = distance(fitnessMeasures.begin(), max_element(fitnessMeasures.begin(), fitnessMeasures.end()));
         std::cout << "Last generation parameters: ";
-        for (int& parameter : population[indexOfMaxFitness]) std::cout << parameter << ", ";
-        std::cout << std::endl;
+        for (int parameter : population[indexOfMaxFitness]) std::cout << parameter << ", ";
     }
 };
 
@@ -219,6 +219,7 @@ int main()
     {
         std::cout << "ID: " << item.id << " VALUE: " << item.value << " WEIGHT: " << item.weight << std::endl;
     }
+    std::cout << std::endl;
 
     const int knapsackCapacity = 100;
     GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
