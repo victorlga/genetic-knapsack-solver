@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <vector>
 #include <utility>
@@ -51,20 +52,11 @@ class GeneticKnapsack
 {
     private:
     int capacity;
-    int fitnessMaxValueIndex;
     int numberOfSolutionsPerPopulation;
     int populationSize;
     vector<int> fitness;
     vector<vector<int>> parents;
     vector<vector<int>> population;
-
-    void findFitnessMaxValueIndex()
-    {
-        int maxValueFitness = *max_element(fitness.begin(), fitness.end());
-        int i = 0;
-        while (fitness[i] != maxValueFitness) i++;
-        fitnessMaxValueIndex = i;
-    }
 
     public:
     GeneticKnapsack(
@@ -79,12 +71,13 @@ class GeneticKnapsack
         mt19937 gen(rd());
         uniform_int_distribution<> solutionDistr(0, 1);
 
+        vector<int> individual;
         for (int i = 0; i < populationSize; ++i) {
-            vector<int> individual;
             for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
                 individual.push_back(solutionDistr(gen));
             }
             population.push_back(individual);
+            individual.clear();
         }
     }
 
@@ -106,12 +99,11 @@ class GeneticKnapsack
 
     void selectSolutionFromPopulation(int numberOfParents)
     {
-        vector<int> parent;
         for (int i = 0; i < numberOfParents; ++i)
         {
-            findFitnessMaxValueIndices();
-            parent = population[];
-            parents.push_back(parent);
+            int indexOfMaxFitness = distance(fitness.begin(), max_element(fitness.begin(), fitness.end()));
+            parents.push_back(population[indexOfMaxFitness]);
+            fitness[indexOfMaxFitness] = numeric_limits<int>::min();
         }
     }
 };
