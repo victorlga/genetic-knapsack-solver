@@ -59,37 +59,12 @@ class GeneticKnapsack
                                   offsprings,
                                   mutants;
 
-    public:
-    GeneticKnapsack(
-        int capacity,
-        std::vector<Item> items
-    ) : capacity(capacity), items(items) {}
-
-    void createInitialPopulation(int newPopulationSize, int newNumberOfSolutionsPerPopulation)
-    {
-        populationSize = newPopulationSize;
-        numberOfSolutionsPerPopulation = newNumberOfSolutionsPerPopulation;
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> solutionDistr(0, 1);
-
-        population.clear();
-
-        std::vector<int> individual;
-        for (int i = 0; i < populationSize; ++i) {
-            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
-                individual.push_back(solutionDistr(gen));
-            }
-            population.push_back(individual);
-            individual.clear();
-        }
-    }
-
-    void calculateFitness(int weight, int value)
+    void calculateFitness()
     {
         for (int i = 0; i < populationSize; ++i)
         {
+            int value = items[i].value;
+            int weight = items[i].weight;
             int sumOfSelectedValues = 0;
             int sumOfSelectedWeights = 0;
             for (int j = 0; j < numberOfSolutionsPerPopulation; ++j)
@@ -102,7 +77,7 @@ class GeneticKnapsack
         }
     }
 
-    void selectSolutionFromPopulation(int numberOfParents)
+    void selectParentsFromPopulation(int numberOfParents)
     {
         parents.clear();
         for (int i = 0; i < numberOfParents; ++i)
@@ -170,9 +145,61 @@ class GeneticKnapsack
         }
     }
 
-    void optimize()
+    void updatePopulation()
     {
+        merge(parents.begin(), parents.end(),
+              mutants.begin(), mutants.end(),
+              population.begin());
+    }
 
+    public:
+    GeneticKnapsack(
+        int capacity,
+        std::vector<Item> items
+    ) : capacity(capacity), items(items) {}
+
+    void createInitialPopulation(int newPopulationSize, int newNumberOfSolutionsPerPopulation)
+    {
+        populationSize = newPopulationSize;
+        numberOfSolutionsPerPopulation = newNumberOfSolutionsPerPopulation;
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> solutionDistr(0, 1);
+
+        population.clear();
+
+        std::vector<int> individual;
+        for (int i = 0; i < populationSize; ++i) {
+            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
+                individual.push_back(solutionDistr(gen));
+            }
+            population.push_back(individual);
+            individual.clear();
+        }
+    }
+
+    void optimizePopulation(int numberOfGenerations)
+    {
+        std::vector<std::vector<int>> fitnessMeasuresHistory;
+        int halfPopulationSize = populationSize / 2;
+
+        for (int i = 0; i<numberOfGenerations; ++i)
+        {
+            calculateFitness();
+            fitnessMeasuresHistory.push_back(fitnessMeasures);
+
+            selectParentsFromPopulation(halfPopulationSize);
+            crossOverParents(halfPopulationSize);
+            mutateOffsprings();
+
+            updatePopulation();
+        }
+
+        for ()
+        {
+
+        }
     }
 };
 
@@ -194,9 +221,7 @@ int main()
     geneticKnapsack.createInitialPopulation(populationSize, numberOfSolutionsPerPopulation);
 
     const int numberOfGenerations = 1000;
+    geneticKnapsack.optimizePopulation(numberOfGenerations);
 
-    
-
-    
     return 0;
 }
