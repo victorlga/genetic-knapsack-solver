@@ -1,9 +1,8 @@
 #include <algorithm>
 #include <iostream>
-#include <limits>
 #include <random>
 #include <vector>
-#include <utility>
+
 
 const int MAX_NUMBER_OF_ITEMS = 50;
 const int MAX_ITEM_VALUE = 100;
