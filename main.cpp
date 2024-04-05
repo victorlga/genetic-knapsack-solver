@@ -7,7 +7,7 @@
 
 const int MAX_NUMBER_OF_ITEMS = 50;
 const int MAX_ITEM_VALUE = 100;
-const int MAX_ITEM_WEIGHT = 15;
+const int MAX_ITEM_WEIGHT = 30;
 
 struct Item
 {
@@ -30,7 +30,7 @@ std::vector<Item> createRandomItems()
     int value;
     int weight;
 
-    std::vector<Item> items = {};
+    std::vector<Item> items;
 
     for (int id = 0; id < numberOfItems; ++id)
     {
@@ -50,7 +50,7 @@ class GeneticKnapsack
 {
     private:
     int capacity;
-    int numberOfSolutionsPerPopulation;
+    int numberOfItems;
     int populationSize;
     std::vector<int> fitnessMeasures;
     std::vector<Item> items;
@@ -65,15 +65,12 @@ class GeneticKnapsack
         fitnessMeasures.clear();
         for (int i = 0; i < populationSize; ++i)
         {
-            int value = items[i].value;
-            int weight = items[i].weight;
             int sumOfSelectedValues = 0;
             int sumOfSelectedWeights = 0;
-            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j)
+            for (int j = 0; j < numberOfItems; ++j)
             {
-                int solutionItemMask = population[i][j];
-                sumOfSelectedValues += solutionItemMask * value;
-                sumOfSelectedWeights += solutionItemMask * weight;
+                sumOfSelectedValues += population[i][j] * items[j].value;
+                sumOfSelectedWeights += population[i][j] * items[j].weight;
             }
             fitnessMeasures.push_back((sumOfSelectedWeights <= capacity) ? sumOfSelectedValues : 0);
         }
@@ -81,30 +78,30 @@ class GeneticKnapsack
 
     void selectParentsFromPopulation(int numberOfParents)
     {
-        parents.clear();
+        std::vector<std::vector<int>> newParents;
         for (int i = 0; i < numberOfParents; ++i)
         {
             int indexOfMaxFitness = distance(fitnessMeasures.begin(), max_element(fitnessMeasures.begin(), fitnessMeasures.end()));
-            parents.push_back(population[indexOfMaxFitness]);
-            fitnessMeasures[indexOfMaxFitness] = std::numeric_limits<int>::min();
+            newParents.push_back(population[indexOfMaxFitness]);
+            fitnessMeasures[indexOfMaxFitness] = -1;
         }
+        parents = newParents;
     }
 
     std::vector<int> createOffspring(int parent1Index, int parent2Index)
     {
-        std::vector<int> offspring;
-        for (int i = 0; i < numberOfSolutionsPerPopulation/2; ++i)
-        {   
-            int parentOffspringValue = (i < numberOfSolutionsPerPopulation/2) ? parents[parent1Index][i] : parents[parent2Index][i];
-            offspring.push_back(parentOffspringValue);
-        }
+        int halfNumberOfItems = numberOfItems / 2;
+        std::vector<int> offspring(numberOfItems);
+
+        std::copy(parents[parent1Index].begin(), parents[parent1Index].begin() + halfNumberOfItems, offspring.begin());
+        std::copy(parents[parent2Index].begin() + halfNumberOfItems, parents[parent2Index].end(), offspring.begin() + halfNumberOfItems);
 
         return offspring;
     }
 
     void crossOverParents(int numberOfOffsprings)
     {
-        offsprings.clear();
+        std::vector<std::vector<int>> newOffsprings;
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -118,32 +115,36 @@ class GeneticKnapsack
         int offspringsCount = 0;
         while (offspringsCount < numberOfOffsprings)
         {
-            parent1Index = parentIndexReference % parents.size();
-            parent2Index = (parentIndexReference + 1) % parents.size();
-
             if (crossOverDistr(gen) > crossingOverRate)
             {
-                offsprings.push_back(createOffspring(parent1Index, parent2Index));
+                parent1Index = parentIndexReference % parents.size();
+                parent2Index = (parentIndexReference + 1) % parents.size();
+                newOffsprings.push_back(createOffspring(parent1Index, parent2Index));
                 offspringsCount++;
             }
             parentIndexReference++;
         }
+        offsprings = newOffsprings;
     }
 
     void mutateOffsprings()
     {
         double mutationRate = 0.15;
-        mutants = offsprings;
+        mutants.clear();
+
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<> mutationDistr(0.0, 1.0);
-        std::uniform_int_distribution<> mutantsDistr(0, numberOfSolutionsPerPopulation-1);
-        int mutantSolutionIndex;
-        for (int i = 0; i < offsprings.size(); ++i)
+        std::uniform_real_distribution<> mutationRateDistr(0.0, 1.0);
+        std::uniform_int_distribution<> mutantsDistr(0, numberOfItems-1);
+
+        int mutantIndex;
+        for (int i = 0; i < static_cast<int>(offsprings.size()); ++i)
         {
-            if (mutationDistr(gen) <= mutationRate) continue;
-            mutantSolutionIndex = mutantsDistr(gen);
-            mutants[i][mutantSolutionIndex] = (mutants[i][mutantSolutionIndex] == 0) ? 1 : 0;
+            std::vector<int> mutant = offsprings[i];
+            if (mutationRateDistr(gen) <= mutationRate) continue;
+            mutantIndex = mutantsDistr(gen);
+            mutant[mutantIndex] = (offsprings[i][mutantIndex] == 0) ? 1 : 0;
+            mutants.push_back(mutant);
         }
     }
 
@@ -162,38 +163,38 @@ class GeneticKnapsack
         std::vector<Item> items
     ) : capacity(capacity), items(items) {}
 
-    void createInitialPopulation(int newPopulationSize, int newNumberOfSolutionsPerPopulation)
+    void createInitialPopulation(int newPopulationSize, int newNumberOfItems)
     {
         populationSize = newPopulationSize;
-        numberOfSolutionsPerPopulation = newNumberOfSolutionsPerPopulation;
+        numberOfItems = newNumberOfItems;
 
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> solutionDistr(0, 1);
 
-        population.clear();
-
-        std::vector<int> individual;
-        for (int i = 0; i < populationSize; ++i) {
-            for (int j = 0; j < numberOfSolutionsPerPopulation; ++j) {
+        for (int i = 0; i < populationSize; ++i)
+        {
+            std::vector<int> individual;
+            for (int j = 0; j < numberOfItems; ++j)
+            {
                 individual.push_back(solutionDistr(gen));
             }
             population.push_back(individual);
-            individual.clear();
         }
     }
 
     void optimizePopulation(int numberOfGenerations)
     {
-        int halfPopulationSize = populationSize / 2;
+        int halfNumberOfItems = numberOfItems / 2;
+        int numberOfParents = populationSize / 2;
 
         for (int i = 0; i<numberOfGenerations; ++i)
         {
             calculateFitness();
             fitnessMeasuresHistory.push_back(fitnessMeasures);
 
-            selectParentsFromPopulation(halfPopulationSize);
-            crossOverParents(halfPopulationSize);
+            selectParentsFromPopulation(numberOfParents);
+            crossOverParents(halfNumberOfItems);
             mutateOffsprings();
 
             updatePopulation();
@@ -202,13 +203,47 @@ class GeneticKnapsack
 
     void showResults()
     {
-        std::cout << "Last generation fitness measure: ";
+        calculateFitness();
+
+        std::cout << "Last generation fitness: ";
         for (int& fitnessMeasure : fitnessMeasures) std::cout << fitnessMeasure << ", ";
         std::cout << std::endl;
 
         int indexOfMaxFitness = distance(fitnessMeasures.begin(), max_element(fitnessMeasures.begin(), fitnessMeasures.end()));
+        std::cout << "Index of max fitness: " << indexOfMaxFitness << std::endl << std::endl;
+        std::vector<int> solution = population[indexOfMaxFitness];
+
         std::cout << "Last generation parameters: ";
-        for (int parameter : population[indexOfMaxFitness]) std::cout << parameter << ", ";
+        for (int& parameter : solution) std::cout << parameter << ", ";
+        std::cout << std::endl;
+
+        int value = 0;
+        std::cout << "Selected item values: ";
+        for (int i = 0; i < numberOfItems; ++i)
+        {
+            if (population[indexOfMaxFitness][i] == 1) 
+            {
+                std::cout << items[i].value << ", ";
+                value += items[i].value;
+            }
+        }
+        std::cout << std::endl;
+
+        int weight = 0;
+        std::cout << "Selected item weights: ";
+        for (int i = 0; i < numberOfItems; ++i)
+        {
+            if (population[indexOfMaxFitness][i] == 1) 
+            {
+                std::cout << items[i].weight << ", ";
+                weight += items[i].weight;
+            }
+        }
+        std::cout << std::endl << std::endl;
+
+        std::cout << "Final value: " << value << std::endl;
+        std::cout << "Final weight: " << weight << std::endl;
+        std::cout << "Capacity: " << capacity << std::endl;
     }
 };
 
@@ -223,16 +258,16 @@ int main()
     }
     std::cout << std::endl;
 
-    const int knapsackCapacity = 100;
+    const int knapsackCapacity = MAX_ITEM_WEIGHT * 2;
     GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
 
-    const int populationSize = items.size();
-    const int numberOfSolutionsPerPopulation = 16;
-    geneticKnapsack.createInitialPopulation(populationSize, numberOfSolutionsPerPopulation);
+    const int populationSize = MAX_NUMBER_OF_ITEMS; // Por que não funciona quando permito valores maiores?
+    const int numberOfItems = items.size();
+    geneticKnapsack.createInitialPopulation(populationSize, numberOfItems);
 
     const int numberOfGenerations = 1000;
     geneticKnapsack.optimizePopulation(numberOfGenerations);
-
+        
     geneticKnapsack.showResults();
 
     return 0;
