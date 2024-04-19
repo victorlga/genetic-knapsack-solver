@@ -149,11 +149,10 @@ class GeneticKnapsack
 
     void updatePopulation()
     {
-        merge(
-            parents.begin(), parents.end(),
-            mutants.begin(), mutants.end(),
-            population.begin()
-        );
+        population.clear();
+        population = parents;
+        for (std::vector<int>& mutant : mutants)
+            population.push_back(mutant);
     }
 
     public:
@@ -260,7 +259,7 @@ int main()
     const int knapsackCapacity = MAX_ITEM_WEIGHT * 2;
     GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
 
-    const int populationSize = MAX_NUMBER_OF_ITEMS; // Por que não funciona quando permito valores maiores?
+    const int populationSize = 16;
     const int numberOfItems = items.size();
     geneticKnapsack.createInitialPopulation(populationSize, numberOfItems);
 
