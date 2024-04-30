@@ -149,10 +149,13 @@ class GeneticKnapsack
 
     void updatePopulation()
     {
-        population.clear();
-        population = parents;
-        for (std::vector<int>& mutant : mutants)
-            population.push_back(mutant);
+        // Not proper solution, but it works.
+        // Merge will just append vectors, alternating between parents and mutants.
+        merge(
+            parents.begin(), parents.end(),
+            mutants.begin(), mutants.end(),
+            population.begin()
+        );
     }
 
     public:
@@ -259,7 +262,7 @@ int main()
     const int knapsackCapacity = MAX_ITEM_WEIGHT * 2;
     GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
 
-    const int populationSize = 16;
+    const int populationSize = MAX_NUMBER_OF_ITEMS;
     const int numberOfItems = items.size();
     geneticKnapsack.createInitialPopulation(populationSize, numberOfItems);
 
