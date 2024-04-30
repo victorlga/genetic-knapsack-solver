@@ -149,6 +149,8 @@ class GeneticKnapsack
 
     void updatePopulation()
     {
+        // Not proper solution, but it works.
+        // Merge will just append vectors, alternating between parents and mutants.
         merge(
             parents.begin(), parents.end(),
             mutants.begin(), mutants.end(),
@@ -260,7 +262,7 @@ int main()
     const int knapsackCapacity = MAX_ITEM_WEIGHT * 2;
     GeneticKnapsack geneticKnapsack(knapsackCapacity, items);
 
-    const int populationSize = MAX_NUMBER_OF_ITEMS; // Por que não funciona quando permito valores maiores?
+    const int populationSize = MAX_NUMBER_OF_ITEMS;
     const int numberOfItems = items.size();
     geneticKnapsack.createInitialPopulation(populationSize, numberOfItems);
 
