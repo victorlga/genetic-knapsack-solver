@@ -1,0 +1,32 @@
+ID: 0 VALUE: 83 WEIGHT: 22
+ID: 1 VALUE: 59 WEIGHT: 1
+ID: 2 VALUE: 73 WEIGHT: 20
+ID: 3 VALUE: 11 WEIGHT: 17
+ID: 4 VALUE: 1 WEIGHT: 1
+ID: 5 VALUE: 11 WEIGHT: 4
+ID: 6 VALUE: 56 WEIGHT: 6
+ID: 7 VALUE: 52 WEIGHT: 20
+ID: 8 VALUE: 59 WEIGHT: 11
+ID: 9 VALUE: 98 WEIGHT: 10
+ID: 10 VALUE: 10 WEIGHT: 6
+ID: 11 VALUE: 77 WEIGHT: 24
+ID: 12 VALUE: 71 WEIGHT: 8
+ID: 13 VALUE: 82 WEIGHT: 19
+ID: 14 VALUE: 3 WEIGHT: 18
+ID: 15 VALUE: 27 WEIGHT: 26
+ID: 16 VALUE: 3 WEIGHT: 8
+ID: 17 VALUE: 11 WEIGHT: 19
+ID: 18 VALUE: 20 WEIGHT: 12
+ID: 19 VALUE: 49 WEIGHT: 3
+ID: 20 VALUE: 78 WEIGHT: 19
+
+Last generation fitness: 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 433, 432, 432, 432, 432, 432, 432, 0, 0, 384, 0, 377, 422, 384, 422, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+Index of max fitness: 0
+
+Last generation parameters: 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 
+Selected item values: 59, 1, 11, 56, 98, 10, 71, 49, 78, 
+Selected item weights: 1, 1, 4, 6, 10, 6, 8, 3, 19, 
+
+Final value: 433
+Final weight: 58
+Capacity: 60

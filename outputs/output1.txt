@@ -1,0 +1,25 @@
+ID: 0 VALUE: 13 WEIGHT: 2
+ID: 1 VALUE: 33 WEIGHT: 28
+ID: 2 VALUE: 86 WEIGHT: 14
+ID: 3 VALUE: 56 WEIGHT: 12
+ID: 4 VALUE: 17 WEIGHT: 18
+ID: 5 VALUE: 16 WEIGHT: 17
+ID: 6 VALUE: 11 WEIGHT: 26
+ID: 7 VALUE: 83 WEIGHT: 3
+ID: 8 VALUE: 52 WEIGHT: 1
+ID: 9 VALUE: 36 WEIGHT: 10
+ID: 10 VALUE: 9 WEIGHT: 29
+ID: 11 VALUE: 78 WEIGHT: 8
+ID: 12 VALUE: 37 WEIGHT: 10
+ID: 13 VALUE: 56 WEIGHT: 14
+
+Last generation fitness: 358, 358, 355, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 441, 428, 428, 428, 428, 428, 428, 428, 428, 0, 358, 0, 0, 0, 0, 0, 0, 0, 0, 152, 0, 0, 0, 0, 0, 0, 249, 0, 0, 0, 0, 
+Index of max fitness: 3
+
+Last generation parameters: 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 
+Selected item values: 13, 86, 56, 83, 52, 36, 78, 37, 
+Selected item weights: 2, 14, 12, 3, 1, 10, 8, 10, 
+
+Final value: 441
+Final weight: 60
+Capacity: 60
